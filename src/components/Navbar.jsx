@@ -1,6 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+  const { user, logOut } = UserAuth();
+  const navigate = useNavigate();
+  // console.log(user.email);
+
+  const handleLogout = async () => {
+    try {
+      await logOut();
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <nav className=" flex items-center justify-between p-4 w-full z-[100] absolute">
       <Link to="/">
@@ -8,17 +21,33 @@ const Navbar = () => {
           NETFLIX
         </h1>
       </Link>
-      <div>
-        <Link to="/login">
-          <button className="text-white pr-4">Sign In</button>
-        </Link>
+      {user?.email ? (
+        <div>
+          <Link to="/account">
+            <button className="text-white pr-4">Account</button>
+          </Link>
 
-        <Link to="/signup">
-          <button className="bg-red-600 px-6 py-2 cursor-pointer rounded text-white">
-            Sign Up
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 px-6 py-2 cursor-pointer rounded text-white"
+          >
+            Logout
           </button>
-        </Link>
-      </div>
+        </div>
+      ) : (
+        <div className="flex items-center">
+          <Link to="/login">
+            <button className="text-white pr-4">Sign In</button>
+          </Link>
+          <div>
+            <Link to="/signup">
+              <button className="bg-red-600 px-6 py-2 cursor-pointer rounded text-white">
+                Sign Up
+              </button>
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
